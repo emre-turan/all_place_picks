@@ -67,8 +67,8 @@ export const authOptions: AuthOptions = {
       return token;
     },
     session({ session, user }) {
-      if (session.user && user) {
-        session.user.role = (user as any).role;
+      if (session.user && user && user.role) {
+        session.user = (user as any).role;
       }
       return session;
     },
