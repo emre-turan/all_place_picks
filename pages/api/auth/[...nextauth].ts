@@ -6,7 +6,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 import prisma from "@/app/libs/prismadb";
-import { AdapterUser } from "next-auth/adapters";
+
 
 declare module "next-auth" {
   interface AdapterUser {
@@ -18,6 +18,7 @@ declare module "next-auth" {
     role?: string | null;
   }
 }
+
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -74,10 +75,7 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        const typedUser = user as import("@prisma/client").User;
-        if (typedUser.role) {
-          (token as { role: string }).role = typedUser.role;
-        }
+        (token as { role: string }).role = user.role;
       }
       return token;
     },
@@ -88,7 +86,6 @@ export const authOptions: AuthOptions = {
       return session;
     },
   },
-
   secret: process.env.NEXTAUTH_SECRET,
 };
 

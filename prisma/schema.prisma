@@ -17,11 +17,17 @@ model User {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   favoriteIds     String[] @db.ObjectId
-  role            String?
+  role            UserRole?
 
   accounts Account[]
   listings Listing[]
 }
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
 
 
 model Account {
@@ -43,6 +49,7 @@ model Account {
 
   @@unique([provider, providerAccountId])
 }
+
 
 model Listing {
   id             String @id @default(auto()) @map("_id") @db.ObjectId
