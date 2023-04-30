@@ -74,8 +74,10 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        const typedUser = user as AdapterUser; // Typecast here
-        (token as { role: string }).role = typedUser.role;
+        const typedUser = user as import("@prisma/client").User;
+        if (typedUser.role) {
+          (token as { role: string }).role = typedUser.role;
+        }
       }
       return token;
     },
