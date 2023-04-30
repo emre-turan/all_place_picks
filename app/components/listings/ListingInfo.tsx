@@ -8,7 +8,6 @@ import { FiPhone, FiLink, FiMail } from "react-icons/fi";
 import useCountries from "@/app/hooks/useCountries";
 import { SafeUser } from "@/app/types";
 
-import Avatar from "../Avatar";
 import ListingCategory from "./ListingCategory";
 import Email from "next-auth/providers/email";
 

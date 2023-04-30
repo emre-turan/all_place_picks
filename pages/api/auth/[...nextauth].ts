@@ -68,7 +68,7 @@ export const authOptions: AuthOptions = {
     },
     session({ session, user }) {
       if (session.user && user && user.role) {
-        session.user = (user as any).role;
+        (session.user as any).role = (user as any).role;
       }
       return session;
     },
