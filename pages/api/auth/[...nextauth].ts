@@ -60,15 +60,15 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role;
+        token.role = user.role;
       }
       return token;
     },
-    session({ session, user }) {
-      if (session.user && user && user.role) {
-        (session.user as any).role = (user as any).role;
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.role = token.role;
       }
       return session;
     },
