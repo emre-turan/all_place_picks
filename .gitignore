@@ -27,6 +27,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
 
 # vercel
 .vercel
@@ -43,5 +44,3 @@ TODO.md
 middleware.ts
 
 next-auth.d.ts
-
-
