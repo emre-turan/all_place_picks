@@ -26,7 +26,7 @@ const AdminDashboard = () => {
     status === "authenticated" &&
     session &&
     session.user &&
-    session.user.role !== "ADMIN"
+    (session.user as any).role !== "ADMIN"
   ) {
     router.replace("/");
     return null;
