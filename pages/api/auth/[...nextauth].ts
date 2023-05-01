@@ -7,19 +7,6 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 import prisma from "@/app/libs/prismadb";
 
-
-declare module "next-auth" {
-  interface AdapterUser {
-    id: string;
-    name: string | null;
-    email: string | null;
-    image: string | null;
-    emailVerified: Date | null;
-    role?: string | null;
-  }
-}
-
-
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -73,19 +60,49 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        (token as { role: string }).role = user.role;
-      }
-      return token;
-    },
+    
     async session({ session, token }) {
-      if (token && session.user) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.name = token.name;
+        session.user.email = token.email;
         session.user.role = token.role;
+        session.user.image = token.picture;
       }
       return session;
     },
+    async jwt({ token, user }) {
+      let dbUser = await prisma.user.findFirst({
+        where: {
+          email: token.email,
+        },
+      });
+
+      if (!dbUser && user) {
+        // if user is logged in for the first time
+        dbUser = await prisma.user.create({
+          data: {
+            email: user.email,
+            name: user.name,
+            image: user.image,
+          },
+        });
+      }
+
+      if (dbUser) {
+        return {
+          id: dbUser.id,
+          name: dbUser.name,
+          role: dbUser.role,
+          email: dbUser.email,
+          picture: dbUser.image,
+        };
+      }
+
+      return token;
+    },
   },
+
   secret: process.env.NEXTAUTH_SECRET,
 };
 

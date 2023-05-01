@@ -1,21 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import prisma from "@/app/libs/prismadb";
-import useSWR from "swr";
-
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Container from "../components/Container";
 import ClientOnly from "../components/ClientOnly";
 import useRentModal from "../hooks/useAddModal";
 import RentModal from "../components/modals/AddModal";
 import ListingTable from "../components/dashboard/ListingTable";
+import withSession from "../components/hoc/WithSession";
 
 const AdminDashboard = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const rentModal = useRentModal();
 
   const handleOpenModal = () => {
     rentModal.onOpen();
   };
+
+  if (status === "loading") {
+    return <div>Loading...</div>; // Replace with your loading component or spinner
+  }
+
+  if (status === "authenticated" && session?.user.role !== "ADMIN") {
+    router.replace("/");
+    return null;
+  }
 
   return (
     <ClientOnly>
@@ -38,4 +48,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default withSession(AdminDashboard);
