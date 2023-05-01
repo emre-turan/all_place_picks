@@ -10,6 +10,7 @@ import ToasterProvider from "@/app/providers/ToasterProvider";
 import "./globals.css";
 import ClientOnly from "./components/ClientOnly";
 import getCurrentUser from "./actions/getCurrentUser";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "All Place Picks",
@@ -37,7 +38,10 @@ export default async function RootLayout({
           <RentModal />
           <Navbar currentUser={currentUser} />
         </ClientOnly>
-        <div className="pb-20 pt-28">{children}</div>
+        <div className="pb-20 pt-28">
+          {children}
+          <Analytics />
+        </div>
       </body>
     </html>
   );
