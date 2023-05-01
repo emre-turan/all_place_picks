@@ -63,15 +63,16 @@ export const authOptions: AuthOptions = {
   callbacks: {
     
     async session({ session, token }) {
-      if (token) {
+      if (token && typeof token.id === 'string') {
         session.user.id = token.id;
-        session.user.name = token.name;
-        session.user.email = token.email;
-        session.user.role = token.role;
-        session.user.image = token.picture;
+        session.user.name = typeof token.name === 'string' ? token.name : undefined;
+        session.user.email = typeof token.email === 'string' ? token.email : undefined;
+        session.user.role = typeof token.role === 'string' ? token.role : 'USER'; // Add default value
+        session.user.image = typeof token.picture === 'string' ? token.picture : undefined;
       }
       return session;
     },
+    
     async jwt({ token, user }) {
       let dbUser = await prisma.user.findFirst({
         where: {
