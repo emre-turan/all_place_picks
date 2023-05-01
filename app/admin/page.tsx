@@ -22,7 +22,12 @@ const AdminDashboard = () => {
     return <div>Loading...</div>; // Replace with your loading component or spinner
   }
 
-  if (status === "authenticated" && session?.user.role !== "ADMIN") {
+  if (
+    status === "authenticated" &&
+    session &&
+    session.user &&
+    session.user.role !== "ADMIN"
+  ) {
     router.replace("/");
     return null;
   }
