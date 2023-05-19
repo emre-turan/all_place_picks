@@ -1,16 +1,69 @@
 "use client";
-import { useState, useRef, useEffect, useMemo } from "react";
-import { BiSearch } from "react-icons/bi";
 
+import React, { useState, useRef, useEffect } from "react";
+import { BiSearch } from "react-icons/bi";
+import {
+  InstantSearch,
+  SearchBox,
+  Hits,
+  Configure,
+} from "react-instantsearch-dom";
+import algoliasearch from "algoliasearch";
+import { connectStateResults } from "react-instantsearch-dom";
 interface SearchProps {
-  onSearch: (query: string) => void;
+  indexName: string;
 }
 
-const Search = ({ onSearch }: SearchProps) => {
+interface HitProps {
+  hit: {
+    name: string;
+    category: string;
+    locationValue: string;
+  };
+}
+
+const Search = ({ indexName }: SearchProps) => {
   const [searchActive, setSearchActive] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null); // Create a ref for the container
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  if (
+    !process.env.NEXT_PUBLIC_APP_ID ||
+    !process.env.NEXT_PUBLIC_API_KEY ||
+    !process.env.NEXT_PUBLIC_INDEX
+  ) {
+    throw new Error(
+      "Environment variables NEXT_PUBLIC_APP_ID or NEXT_PUBLIC_API_KEY are not set"
+    );
+  }
+
+  const algoliaClient = algoliasearch(
+    process.env.NEXT_PUBLIC_APP_ID,
+    process.env.NEXT_PUBLIC_API_KEY
+  );
+
+  const searchClient = {
+    ...algoliaClient,
+    search(requests: Array<{ indexName: string; params: { query: string } }>) {
+      if (requests.every(({ params }) => !params.query)) {
+        return Promise.resolve({
+          results: requests.map(() => ({
+            hits: [],
+            nbHits: 0,
+            nbPages: 0,
+            page: 0,
+            processingTimeMS: 0,
+            hitsPerPage: 0,
+            exhaustiveNbHits: false,
+            query: "",
+            params: "",
+          })),
+        });
+      }
+
+      return algoliaClient.search(requests);
+    },
+  };
 
   const locationLabel = "Your Gateway to Global Gems!";
 
@@ -40,10 +93,11 @@ const Search = ({ onSearch }: SearchProps) => {
     setSearchActive((prevState) => !prevState);
   };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    onSearch(e.target.value);
-  };
+  const Hit = ({ hit }: HitProps) => (
+    <div>
+      <h1>{hit.name}</h1>
+    </div>
+  );
 
   return (
     <div
@@ -74,7 +128,6 @@ const Search = ({ onSearch }: SearchProps) => {
           <div
             className="
               text-sm 
-              
               px-6
             "
           >
@@ -82,18 +135,11 @@ const Search = ({ onSearch }: SearchProps) => {
           </div>
         )}
         {searchActive && (
-          <input
-            ref={searchInputRef}
-            type="text"
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="
-              px-6 
-              w-full
-              focus:outline-none
-            "
-            placeholder="Search your next gem"
-          />
+          <InstantSearch indexName={indexName} searchClient={searchClient}>
+            <SearchBox />
+            <Hits hitComponent={Hit} />
+            <Configure hitsPerPage={10} />
+          </InstantSearch>
         )}
         <div
           className="

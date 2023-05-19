@@ -1,8 +1,6 @@
 "use client";
 
 import Container from "../Container";
-import Categories from "./Categories";
-
 import Logo from "./Logo";
 import Search from "./Search";
 import UserMenu from "./UserMenu";
@@ -19,7 +17,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentUser }) => {
         <Container>
           <div className="flex flex-row items-center  justify-between  gap-3  md:gap-0">
             <Logo />
-            <Search onSearch={(query: string) => console.log(query)} />
+            {/* <Search indexName="allplacepicks" />  */}
             <UserMenu currentUser={currentUser} />
           </div>
         </Container>
