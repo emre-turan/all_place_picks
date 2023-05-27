@@ -5,10 +5,15 @@ All Place Picks is a comprehensive web application designed to showcase leading,
 ## :star2: Features
 
 - :round_pushpin: Interactive Map with Leaflet
-- :lock: Next-auth for authentication
+- :lock: Next-auth for authentication (Credential authentication, Google authentication, Github authentication)
 - :art: Tailwind CSS, Material UI, and Headless UI for frontend design
 - :file_folder: MongoDB and Prisma for database management
-- :camera: Photo and video uploads with Cloudinary
+- :camera: Image upload using Cloudinary CDN
+- Full responsiveness
+- Client form validation and handling using react-hook-form
+- Server error handling using react-toast
+- Page loading state
+- Page empty state
 
 ### User Features
 
